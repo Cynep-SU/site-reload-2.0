@@ -10,6 +10,10 @@
     "jinja-js": "^0.1.8",
     "nodemod": "^2.8.4",
     "npm": "^7.20.3",
-    "nunjucks": "^3.2.3"
+    "nunjucks": "^3.2.3",
+    "mathjs": "^9.4.4"
+  },
+  "devDependencies": {
+    "robust-linear-solve": "^1.0.0"
   }
 }
