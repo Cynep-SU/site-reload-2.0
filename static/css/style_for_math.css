@@ -1,0 +1,17 @@
+.center-block {
+    margin-left:auto;
+    margin-right:auto;
+    display:block;
+}
+
+body{
+    max-width: 650px;
+    margin: auto;
+}
+br {
+    display: block; /* makes it have a width */
+    content: ""; /* clears default height */
+    margin-top: 12.2px; /* change this to whatever height you want it */
+}
+
+

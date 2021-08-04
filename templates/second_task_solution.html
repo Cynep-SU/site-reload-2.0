@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Task {{task_id}}</title>
+    <meta name="Description"
+          content="Это решение задачи под номером {{task_id}}"/>
+    <meta property="og:title" content="Task {{task_id}}">
+    <meta property="og:site_name" content="Task {{task_id}}">
+    <meta property="og:url" content="http://www.phhask.space/math/task_1">
+    <meta property="og:description" content="Это решение задачи под номером {{task_id}}">
+    <meta property="og:image" content="{{ url_for('static', filename='images/math.png')}}">
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css')}}" rel="stylesheet"
+          integrity="" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}">
+    <link rel="icon" href="{{ url_for('static', filename='images/math.png')}}" type="image/png">
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-3.5.1.min.js')}}"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script type="text/javascript" id="MathJax-script" async
+            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+    <link href="{{ url_for('static', filename='css/style_for_math.css')}}" rel="stylesheet">
+
+</head>
+<body>
+<form action="/math/task_1" method="post">
+<div class="input-group px-3 py-3">
+    <span class="input-group-text" id="basic-addon1">f(x) = </span>
+    <input type="text" id="line" class="form-control" placeholder="Значение функции" aria-label="Username" aria-describedby="basic-addon1" name="line" value="{{line}}">
+    <button type="submit" class="btn btn-primary" id="decide-button">Решить</button>
+</div>
+</form>
+<div class="px-3">
+    <div class="border rounded">
+        <p class="text-center px-3 pt-3"> Пример ввода:</p>
+        <div class="d-flex justify-content-evenly">
+            <p class="text-center px-3 pt-3"> x ** 2 <br>sqrt(x) <br> 2 * x<br> ln(x)<br> log(100, 10)<br> exp(x) </p>
+            <div>
+                $$x ^ 2$$
+                $$\sqrt{x}$$
+                $$2x$$
+                $$\ln{x}$$
+                $$\log_{10} 100$$
+                $$e ^ x$$
+            </div>
+        </div>
+    </div>
+</div>
+<div class="px-3 py-3">
+    <div class="border rounded">
+        <p class="text-start px-3 pt-3">{{solution}}</p>
+        <div class="image_wrap">
+            <img src="/get_image/{{task_id}}">
+        </div>
+
+    </div>
+</div>
+<label for="basic-url" class="form-label px-3 pt-3">Your vanity URL</label>
+<div class="input-group px-3 mb-3">
+    <span class="input-group-text" id="basic-addon3">https://phhask.space/t/</span>
+    <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3">
+    <button type="button" class="btn btn-primary" id="share-button">Share</button>
+</div>
+<div class="px-3">
+    <div class="alert alert-danger px-3" role="alert" id="bad_url">
+        Такое имя уже используется.
+    </div>
+</div>
+
+<div class="px-3">
+    <div class="alert alert-success px-3" role="alert" id="good_url">
+        Поздравляю, ты придумал что-то оригинальное.
+    </div>
+</div>
+<div class="px-3">
+    <div class="alert alert-warning" role="alert" id="was_url">
+        У этой задачи уже есть ссылка.
+    </div>
+</div>
+<div class="px-3 py-3">
+    <button type="button" class="btn btn-outline-info" onclick='document.location.replace("/")'>Вернутся на главный экран</button>
+</div>
+<footer class="py-2 d-flex justify-content-center" id='footer'>
+    <a href="https://github.com/Cynep-SU">
+        <img src="{{ url_for('static', filename='images/pankoff.png')}}" alt="HTML tutorial"
+             style="width:78px;height:78px;">
+    </a>
+</footer>
+</body>
+<script src="js/bootstrap.bundle.min.js"
+        integrity=""
+        crossorigin="anonymous"></script>
+<script>
+    if (!navigator.share) {
+        document.getElementById('share-button').innerText = 'Copy'
+    }
+    var task_id = {{task_id}};
+    var bool = {{beauti}}
+    const bad_url = document.getElementById("bad_url")
+    const good_url = document.getElementById("good_url")
+    if (!bool) {
+        document.getElementById("was_url").style.display = 'none'
+    } else {
+        document.getElementById('basic-url').value = "{{link}}"
+        document.getElementById('basic-url').readOnly = true
+    }
+    good_url.style.display = 'none';
+    bad_url.style.display = 'none';
+    const input = document.getElementById('basic-url');
+    var xhr = new XMLHttpRequest();
+    input.addEventListener('input', check_link);
+
+    function check_link(e) {
+        if (bool) {
+            return;
+        }
+        if (input.value == '') {
+            good_url.style.display = 'none'
+            bad_url.style.display = 'none'
+            return
+        }
+        input.value = input.value.toLowerCase()
+        var x = input.value.split(' ')
+        input.value = x.join('_')
+        xhr.open('POST', '/check_url', false)
+        xhr.send(input.value)
+        if (xhr.responseText == 'True') {
+            bad_url.style.display = 'none'
+            good_url.style.display = ''
+        } else {
+            good_url.style.display = 'none'
+            bad_url.style.display = ''
+        }
+    }
+
+    var shareButton = document.getElementById('share-button');
+    var xhr = new XMLHttpRequest();
+    shareButton.addEventListener('click', share_and_save);
+
+    function share_and_save(e) {
+        if (good_url.style.display === '' || bool) {
+            xhr.open('POST', '/add_url', false)
+            xhr.send(input.value + "୪" + task_id)
+            bool = true
+            document.getElementById('basic-url').readOnly = true
+            document.getElementById("was_url").style.display = ''
+            document.getElementById("good_url").style.display = 'none'
+            console.log(task_id)
+            if (navigator.share) {
+                console.log("Congrats! Your browser supports Web Share API")
+
+                // navigator.share принимает объект с URL, title или text
+                navigator.share({
+                    title: "Задача {{task_id}}",
+                    text: "",
+                    url: ("http://phhask.space/t/" + input.value).toString()
+                })
+                    .then(function () {
+                        console.log("Shareing successfull")
+                    })
+                    .catch(function () {
+                        console.log("Sharing failed")
+                    })
+
+            } else {
+                let save_value = input.value
+                input.value = "http://www.phhask.space/t/" + input.value
+                input.select()
+                input.setSelectionRange(0, 99999)
+                document.execCommand("copy")
+                input.value = save_value
+                console.log("Sorry! Your browser does not support Web Share API")
+            }
+
+        } else {
+            alert("Думаешь слишком умный?")
+        }
+    }
+</script>
+</html>
