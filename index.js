@@ -109,8 +109,9 @@ function MYKY(legs){
     let b = [0]
     for (let g = 0; g < arr.length; g++){
         console.log(arr[g])
-        let one = legs[arr[g][0] - 1][2] * ((legs[arr[g][0] - 1][1] === 'L'? -1: 1))
-        let second = legs[arr[g][1] - 1][2] * ((legs[arr[g][0] - 1][1] === 'R'? -1: 1))
+        let one = legs[arr[g][0] - 1][2] * (legs[arr[g][0] - 1][1] === 'L'? -1: 1)
+        let second = legs[arr[g][1] - 1][2] * (legs[arr[g][1] - 1][1] === 'R'? -1: 1)
+        console.log(one, second)
         b.push(one + second)
     }
     let a = []
@@ -122,13 +123,11 @@ function MYKY(legs){
     for (let g = 0; g < arr.length; g++){
         let gg = []
         for (let i = 1; i <= legs.length; i++){
-            console.log(arr[g], i, arr[g].includes(i), arr[g].includes(i) ? (arr[g].indexOf(i) === 1 ? legs[i - 1][0] : -legs[i - 1][0]) : 0)
             gg.push(arr[g].includes(i) ? (arr[g].indexOf(i) === 1 ? legs[i - 1][0] : -legs[i - 1][0]) : 0)
         }
         a.push(gg)
     }
-    console.log(a, b)
-    let x = linSolve(a, b)
+    let x = mathjs.lusolve(a, b)
     return x
 }
 
